@@ -1,0 +1,34 @@
+$(document).ready(function() {
+    // Replace these with your ThingSpeak Channel ID and Read API Key
+    var channelID = '2293534';
+    var apiKey = 'WCERYOHFECNAL2D9';
+
+    // Specify the number of data points to retrieve
+    var numDataPoints = 10; // Adjust as needed
+
+    var apiUrl = 'GET https://api.thingspeak.com/channels/2293534/feeds.json?api_key=WCERYOHFECNAL2D9&results=2/' + channelID + '/charts/1?api_key=' + apiKey + '&results=' + numDataPoints;
+
+    $.get(apiUrl, function(data) {
+        var chartData = data.feeds;
+
+        // Process your data and create a chart here
+        // You may need to use a charting library like Chart.js or Google Charts for this step
+
+        // Example using Google Charts
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('string', 'Timestamp');
+            dataTable.addColumn('number', 'Value');
+
+            for (var i = 0; i < chartData.length; i++) {
+                dataTable.addRow([chartData[i].created_at, parseFloat(chartData[i].field1)]);
+            }
+
+            var chart = new google.visualization.LineChart(document.getElementById('chart-container'));
+            chart.draw(dataTable, { title: 'ThingSpeak Data' });
+        }
+    });
+});
